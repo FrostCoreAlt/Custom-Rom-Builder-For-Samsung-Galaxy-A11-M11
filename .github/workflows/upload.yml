@@ -52,10 +52,15 @@ jobs:
     - name: Rename ROM to match input name
       run: |
         mkdir -p zip
-        mv zip/*.zip "zip/${{ github.event.inputs.NAME }}.zip" || echo "No ROM zip found"
+        found_file=$(find zip -type f -name "*.zip" | head -n 1)
+        if [ -n "$found_file" ]; then
+          mv "$found_file" "zip/${{ github.event.inputs.NAME }}.zip"
+        else
+          echo "No ROM zip found!" && exit 1
+        fi
 
     - name: Uploading The Zip
       uses: actions/upload-artifact@v4
       with:
         name: ${{ github.event.inputs.NAME }}
-        path: zip/*.zip
+        path: zip/${{ github.event.inputs.NAME }}.zip
