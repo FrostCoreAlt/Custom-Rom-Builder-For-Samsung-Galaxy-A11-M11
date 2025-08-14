@@ -49,18 +49,10 @@ jobs:
       run: |
         ./arm${{ github.event.inputs.ARCH }}_git
 
-    - name: Rename ROM to match input name
-      run: |
-        mkdir -p zip
-        found_file=$(find zip -type f -name "*.zip" | head -n 1)
-        if [ -n "$found_file" ]; then
-          mv "$found_file" "zip/${{ github.event.inputs.NAME }}.zip"
-        else
-          echo "No ROM zip found!" && exit 1
-        fi
-
-    - name: Uploading The Zip
+    - name: Find and Upload ROM Zip
       uses: actions/upload-artifact@v4
       with:
         name: ${{ github.event.inputs.NAME }}
-        path: zip/${{ github.event.inputs.NAME }}.zip
+        path: |
+          **/*.zip
+        if-no-files-found: error
